@@ -1,28 +1,59 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+import '../api.dart';
+import '../utils.dart';
+import 'config.dart';
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
 
-class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    TextEditingController textController =
+        TextEditingController(text: Config.playerName);
+    textController.addListener(() => Config.playerName = textController.text);
     return Scaffold(
       appBar: AppBar(
         actions: [
           IconButton(
-              onPressed: () => Navigator.pushNamed(context, 'settings'),
+              onPressed: () => Navigator.pushNamed(context, Pages.Settings),
               icon: const Icon(Icons.settings))
         ],
         title: const Text('Home'),
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () => Navigator.pushNamed(context, 'lobby'),
-          child: const Text('Join'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            const Text("Your Name"),
+            SizedBox(
+              width: 250,
+              child: TextField(
+                controller: textController,
+                maxLength: 12,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(context, Pages.Join),
+                  child: const Text('Join'),
+                ),
+                ElevatedButton(
+                  onPressed: () => API.instance.createLobby().then((value) {
+                    if (value) {
+                      return Navigator.pushNamed(context, Pages.Lobby);
+                    } else {
+                      Utils.msg(context, "Couldn't create lobby.");
+                    }
+                  }),
+                  child: const Text('Host'),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

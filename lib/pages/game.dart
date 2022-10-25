@@ -7,7 +7,7 @@ import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:misterx/widgets/message.dart';
+import 'package:misterx/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class GamePage extends StatefulWidget {

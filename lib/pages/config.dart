@@ -1,15 +1,33 @@
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Config {
-  static late final PackageInfo packageInfo;
-  static late final String appVersion;
   static late final SharedPreferences _prefs;
+
+  static const String _xGPSKey = "xGPS";
+  static const String _playerGPSKey = "playerGPS";
+  static const String _darkKey = "dark";
+  static const String _nameKey = "name";
+
+  /// time between position updates from mister x, in minutes
+  static late int xGPSInterval;
+
+  /// in seconds
+  static late int playerGPSInterval;
+  static bool darkMode = true;
+  static late String playerName;
 
   static Future<void> load() async {
     _prefs = await SharedPreferences.getInstance();
+    xGPSInterval = _prefs.getInt(_xGPSKey) ?? 1;
+    playerGPSInterval = _prefs.getInt(_playerGPSKey) ?? 30;
+    darkMode = _prefs.getBool(_darkKey) ?? true;
+    playerName = _prefs.getString(_nameKey) ?? "Player";
+  }
 
-    packageInfo = await PackageInfo.fromPlatform();
-    appVersion = "${packageInfo.version}+${packageInfo.buildNumber}";
+  static void save() {
+    _prefs.setInt(_xGPSKey, xGPSInterval);
+    _prefs.setInt(_playerGPSKey, playerGPSInterval);
+    _prefs.setBool(_darkKey, darkMode);
+    _prefs.setString(_nameKey, playerName);
   }
 }

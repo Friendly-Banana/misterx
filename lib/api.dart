@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:misterx/widgets/message.dart';
+import 'package:misterx/utils.dart';
 
 class API extends ChangeNotifier {
   static const String url = "localhost:1234/api/";
   static API instance = API();
   late String lobbyCode;
   late int localPlayerID;
-  late List<Player> player;
+  List<Player> player = [];
 
   get localPlayer => player.firstWhere((player) => player.id == localPlayerID);
 
@@ -48,6 +48,7 @@ class API extends ChangeNotifier {
   Widget playerItem(BuildContext context, int index) {
     return ListTile(
       title: Text(player[index].name),
+      subtitle: Text(player[index].pos.toString()),
       trailing: IconButton(
           onPressed: () async {
             if (!await kickPlayer(player[index].id)) {

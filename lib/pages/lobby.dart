@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:misterx/utils.dart';
 
 import '../api.dart';
 
@@ -24,11 +25,12 @@ class _LobbyPageState extends State<LobbyPage> {
             itemCount: API.instance.player.length,
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(
                 onPressed: () async {
                   if (await API.instance.startGame() && context.mounted) {
-                    Navigator.pushNamed(context, 'game');
+                    Navigator.pushNamed(context, Pages.Game);
                   }
                 },
                 child: const Text('Start'),
@@ -36,7 +38,7 @@ class _LobbyPageState extends State<LobbyPage> {
               ElevatedButton(
                 onPressed: () async {
                   if (await API.instance.leaveLobby() && context.mounted) {
-                    Navigator.maybePop(context);
+                    Navigator.pop(context);
                   }
                 },
                 child: const Text('Leave'),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../api.dart';
+
 class LobbyPage extends StatefulWidget {
   const LobbyPage({super.key});
 
@@ -14,11 +16,34 @@ class _LobbyPageState extends State<LobbyPage> {
       appBar: AppBar(
         title: const Text('Lobby'),
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () => Navigator.pushNamed(context, 'game'),
-          child: const Text('Start'),
-        ),
+      body: Column(
+        children: [
+          ListView.builder(
+            itemBuilder: (context, index) =>
+                API.instance.playerItem(context, index),
+            itemCount: API.instance.player.length,
+          ),
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  if (await API.instance.startGame() && context.mounted) {
+                    Navigator.pushNamed(context, 'game');
+                  }
+                },
+                child: const Text('Start'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  if (await API.instance.leaveLobby() && context.mounted) {
+                    Navigator.maybePop(context);
+                  }
+                },
+                child: const Text('Leave'),
+              ),
+            ],
+          )
+        ],
       ),
     );
   }

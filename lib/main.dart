@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
           'home': (context) => const HomePage(),
           'lobby': (context) => const LobbyPage(),
           'game': (context) => const GamePage(),
+          'settings': (context) => const GamePage(),
         });
   }
 }

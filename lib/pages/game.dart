@@ -7,6 +7,7 @@ import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:misterx/widgets/message.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class GamePage extends StatefulWidget {
@@ -56,8 +57,9 @@ class _GamePageState extends State<GamePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Game')),
+    return NotificationListener(
+        child: Scaffold(
+      appBar: AppBar(title: const Text('Find Mister X')),
       body: FlutterMap(
         options: MapOptions(
           center: LatLng(45, 10),
@@ -132,7 +134,7 @@ class _GamePageState extends State<GamePage> {
           color: Colors.white,
         ),
       ),
-    );
+    ));
   }
 
   void permsAndGPS() async {
@@ -161,10 +163,7 @@ class _GamePageState extends State<GamePage> {
         !await Geolocator.isLocationServiceEnabled()) {
       if (!context.mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Enable GPS and give permission'),
-        duration: Duration(seconds: 5),
-      ));
+      Utils.msg(context, 'Enable GPS and give permission');
     }
   }
 }

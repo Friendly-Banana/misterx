@@ -12,6 +12,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+              onPressed: () => Navigator.pushNamed(context, 'settings'),
+              icon: const Icon(Icons.settings))
+        ],
         title: const Text('Home'),
       ),
       body: Center(

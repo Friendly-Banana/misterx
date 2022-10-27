@@ -10,6 +10,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:misterx/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../api.dart';
+
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
 
@@ -18,13 +20,14 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
+  static final LatLng munich = LatLng(48.126154762110744, 11.579897939780327);
   late List<Marker> _markers;
   late CenterOnLocationUpdate _centerOnLocationUpdate;
   late StreamController<double?> _centerCurrentLocationStreamController;
 
   static const urlTemplate =
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-  StoreDirectory cache = FMTC.instance("storeName");
+  StoreDirectory cache = FMTC.instance("munich");
 
   @override
   void initState() {
@@ -32,22 +35,16 @@ class _GamePageState extends State<GamePage> {
     permsAndGPS();
     _centerOnLocationUpdate = CenterOnLocationUpdate.always;
     _centerCurrentLocationStreamController = StreamController<double?>();
-    _markers = [
-      LatLng(47, 11.5),
-      LatLng(48.126154762110744, 11.579897939780327), // Munich
-      LatLng(49, 11.5),
-    ].map(
-      (markerPosition) {
-        return Marker(
-          point: markerPosition,
-          width: 40,
-          height: 40,
-          builder: (_) => const Icon(Icons.location_on, size: 40),
-          anchorPos: AnchorPos.align(AnchorAlign.top),
-        );
-      },
-    ).toList();
+    _markers = API.instance.player.map(createMarker).toList();
   }
+
+  Marker createMarker(Player player) => Marker(
+        point: player.pos,
+        width: 40,
+        height: 40,
+        builder: (_) => const Icon(Icons.location_on, size: 40),
+        anchorPos: AnchorPos.align(AnchorAlign.top),
+      );
 
   @override
   void dispose() {
@@ -62,7 +59,7 @@ class _GamePageState extends State<GamePage> {
       appBar: AppBar(title: const Text('Find Mister X')),
       body: FlutterMap(
         options: MapOptions(
-          center: LatLng(45, 10),
+          center: munich,
           zoom: 6,
           maxZoom: 19,
           keepAlive: true,
@@ -161,7 +158,7 @@ class _GamePageState extends State<GamePage> {
     if (!(permission == LocationPermission.whileInUse ||
             permission == LocationPermission.always) ||
         !await Geolocator.isLocationServiceEnabled()) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       Navigator.pop(context);
       Utils.msg(context, 'Enable GPS and give permission');
     }

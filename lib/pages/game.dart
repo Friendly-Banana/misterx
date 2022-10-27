@@ -8,6 +8,7 @@ import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:misterx/utils.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../api.dart';
@@ -21,7 +22,6 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   static final LatLng munich = LatLng(48.126154762110744, 11.579897939780327);
-  late List<Marker> _markers;
   late CenterOnLocationUpdate _centerOnLocationUpdate;
   late StreamController<double?> _centerCurrentLocationStreamController;
 
@@ -29,13 +29,23 @@ class _GamePageState extends State<GamePage> {
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
   StoreDirectory cache = FMTC.instance("munich");
 
+  late final Timer refresh;
+
   @override
   void initState() {
     super.initState();
     permsAndGPS();
     _centerOnLocationUpdate = CenterOnLocationUpdate.always;
     _centerCurrentLocationStreamController = StreamController<double?>();
-    _markers = API.instance.player.map(createMarker).toList();
+    refresh = Timer.periodic(const Duration(seconds: 10),
+        (timer) => Provider.of<API>(context, listen: false).updatePlayers());
+  }
+
+  @override
+  void dispose() {
+    _centerCurrentLocationStreamController.close();
+    refresh.cancel();
+    super.dispose();
   }
 
   Marker createMarker(Player player) => Marker(
@@ -45,12 +55,6 @@ class _GamePageState extends State<GamePage> {
         builder: (_) => const Icon(Icons.location_on, size: 40),
         anchorPos: AnchorPos.align(AnchorAlign.top),
       );
-
-  @override
-  void dispose() {
-    _centerCurrentLocationStreamController.close();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,27 +87,29 @@ class _GamePageState extends State<GamePage> {
             userAgentPackageName: 'dev.banana.misterx',
             keepBuffer: 3,
           ),
-          MarkerClusterLayerWidget(
-              options: MarkerClusterLayerOptions(
-                  maxClusterRadius: 45,
-                  size: const Size(40, 40),
-                  anchor: AnchorPos.align(AnchorAlign.center),
-                  fitBoundsOptions: const FitBoundsOptions(
-                    padding: EdgeInsets.all(50),
-                    maxZoom: 15,
-                  ),
-                  markers: _markers,
-                  builder: (context, markers) => Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.blue),
-                        child: Center(
-                          child: Text(
-                            markers.length.toString(),
-                            style: const TextStyle(color: Colors.white),
+          Consumer<API>(
+            builder: (context, api, child) => MarkerClusterLayerWidget(
+                options: MarkerClusterLayerOptions(
+                    maxClusterRadius: 45,
+                    size: const Size(40, 40),
+                    anchor: AnchorPos.align(AnchorAlign.center),
+                    fitBoundsOptions: const FitBoundsOptions(
+                      padding: EdgeInsets.all(50),
+                      maxZoom: 15,
+                    ),
+                    markers: api.player.map(createMarker).toList(),
+                    builder: (context, markers) => Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.blue),
+                          child: Center(
+                            child: Text(
+                              markers.length.toString(),
+                              style: const TextStyle(color: Colors.white),
+                            ),
                           ),
-                        ),
-                      ))),
+                        ))),
+          ),
           CurrentLocationLayer(
             centerCurrentLocationStream:
                 _centerCurrentLocationStreamController.stream,
@@ -112,7 +118,7 @@ class _GamePageState extends State<GamePage> {
         ],
         nonRotatedChildren: [
           AttributionWidget.defaultWidget(
-              source: Uri.parse(urlTemplate).host,
+              source: "OpenStreetMap",
               onSourceTapped: () async =>
                   await launchUrl(Uri.parse("openstreetmap.org/copyright"))),
         ],
@@ -123,13 +129,10 @@ class _GamePageState extends State<GamePage> {
           setState(
             () => _centerOnLocationUpdate = CenterOnLocationUpdate.always,
           );
-          // Center the location marker on the map and zoom the map to level 17.
+          // Center the location marker on the map and zoom the map.
           _centerCurrentLocationStreamController.add(17);
         },
-        child: const Icon(
-          Icons.my_location,
-          color: Colors.white,
-        ),
+        child: const Icon(Icons.my_location),
       ),
     ));
   }

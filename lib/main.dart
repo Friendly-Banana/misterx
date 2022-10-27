@@ -6,6 +6,9 @@ import 'package:misterx/pages/join.dart';
 import 'package:misterx/pages/lobby.dart';
 import 'package:misterx/pages/settings.dart';
 import 'package:misterx/utils.dart';
+import 'package:provider/provider.dart';
+
+import 'api.dart';
 
 void main() {
   runApp(const App());
@@ -44,18 +47,21 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: App.darkNotifier,
-      builder: (BuildContext context, bool value, Widget? child) => MaterialApp(
-          title: 'Mister X',
-          theme: value ? ThemeData.dark() : ThemeData.light(),
-          initialRoute: Pages.Home,
-          routes: {
-            Pages.Home: (context) => const HomePage(),
-            Pages.Join: (context) => const JoinPage(),
-            Pages.Lobby: (context) => const LobbyPage(),
-            Pages.Game: (context) => const GamePage(),
-            Pages.Settings: (context) => const SettingsPage(),
-          }),
-    );
+        valueListenable: App.darkNotifier,
+        builder: (BuildContext context, bool value, Widget? child) =>
+            ChangeNotifierProvider(
+              create: (context) => API(),
+              child: MaterialApp(
+                  title: 'Mister X',
+                  theme: value ? ThemeData.dark() : ThemeData.light(),
+                  initialRoute: Pages.Home,
+                  routes: {
+                    Pages.Home: (context) => const HomePage(),
+                    Pages.Join: (context) => const JoinPage(),
+                    Pages.Lobby: (context) => const LobbyPage(),
+                    Pages.Game: (context) => const GamePage(),
+                    Pages.Settings: (context) => const SettingsPage(),
+                  }),
+            ));
   }
 }

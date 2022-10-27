@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../api.dart';
 import '../utils.dart';
@@ -42,7 +43,9 @@ class HomePage extends StatelessWidget {
                   child: const Text('Join'),
                 ),
                 ElevatedButton(
-                  onPressed: () => API.instance.createLobby().then((value) {
+                  onPressed: () => Provider.of<API>(context, listen: false)
+                      .createLobby()
+                      .then((value) {
                     if (value) {
                       return Navigator.pushNamed(context, Pages.Lobby);
                     } else {

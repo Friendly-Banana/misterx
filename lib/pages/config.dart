@@ -14,7 +14,7 @@ class Config {
   /// in seconds
   static late int playerGPSInterval;
   static bool darkMode = true;
-  static late String playerName;
+  static String playerName = "Player";
 
   static Future<void> load() async {
     _prefs = await SharedPreferences.getInstance();

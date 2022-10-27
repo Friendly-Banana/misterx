@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../api.dart';
 import '../utils.dart';
@@ -47,7 +48,7 @@ class _JoinPageState extends State<JoinPage> {
               key: const Key("joinButton"),
               onPressed: validCode
                   ? null
-                  : () => API.instance
+                  : () => Provider.of<API>(context, listen: false)
                           .joinLobby(textController.text)
                           .then((success) {
                         if (success) {

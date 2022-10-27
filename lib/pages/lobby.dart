@@ -14,20 +14,33 @@ class LobbyPage extends StatefulWidget {
 }
 
 class _LobbyPageState extends State<LobbyPage> {
-  late final  Timer refresh;
+  late final Timer refresh;
   @override
   void initState() {
     super.initState();
-    API.instance.addListener(() {setState(() {
-
-    });})
-   refresh= Timer.periodic(const Duration(seconds: 10), (API.instanceer) => API.instance.updatePlayers());
+    refresh = Timer.periodic(const Duration(seconds: 10),
+        (timer) => Provider.of<API>(context, listen: false).updatePlayers());
   }
-  
+
   @override
   void dispose() {
     refresh.cancel();
     super.dispose();
+  }
+
+  Widget playerItem(BuildContext context, int index, API api) {
+    Player player = api.player[index];
+    return ListTile(
+      title: Text(player.name),
+      subtitle: Text(player.pos.toString()),
+      trailing: IconButton(
+          onPressed: () async {
+            if (!await api.kickPlayer(player.id)) {
+              Utils.msg(context, "Kicking ${player.name} failed.");
+            }
+          },
+          icon: const Icon(Icons.cancel)),
+    );
   }
 
   @override
@@ -36,36 +49,37 @@ class _LobbyPageState extends State<LobbyPage> {
       appBar: AppBar(
         title: const Text('Lobby'),
       ),
-      body: Column(
-        children: [
-          ListView.builder(
-            itemBuilder: (context, index) =>
-                API.instance.playerItem(context, index),
-            itemCount: API.instance.player.length,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                onPressed: () async {
-                  if (await API.instance.startGame() && mounted) {
-                    Navigator.pushNamed(context, Pages.Game);
-                  }
-                },
-                child: const Text('Start'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  if (await API.instance.leaveLobby() && mounted) {
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text('Leave'),
-              ),
-            ],
-          )
-        ],
-      ),
+      body: Consumer<API>(
+          builder: (context, api, child) => Column(
+                children: [
+                  ListView.builder(
+                    itemBuilder: (context, index) =>
+                        playerItem(context, index, api),
+                    itemCount: api.player.length,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (await api.startGame() && context.mounted) {
+                            Navigator.pushNamed(context, Pages.Game);
+                          }
+                        },
+                        child: const Text('Start'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (await api.leaveLobby() && context.mounted) {
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const Text('Leave'),
+                      ),
+                    ],
+                  )
+                ],
+              )),
     );
   }
 }

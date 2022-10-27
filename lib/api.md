@@ -8,6 +8,8 @@
 | pos    | POST   | position    | success                         |
 | player | GET    |             | list of players, maybe filtered |
 
+url always prefixed by /api/
+
 auth/session cookies?
 player name + lobby code
 

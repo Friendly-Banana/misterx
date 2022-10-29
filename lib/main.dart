@@ -8,34 +8,29 @@ import 'package:misterx/pages/settings.dart';
 import 'package:misterx/utils.dart';
 import 'package:provider/provider.dart';
 
-import 'api.dart';
+import 'api/api.dart';
+import 'api/testapi.dart';
 
 void main() {
   runApp(const App());
 }
 
 class App extends StatefulWidget {
-  static ValueNotifier<bool> darkNotifier = ValueNotifier(Config.darkMode);
-
   const App({super.key});
 
   @override
-  State<App> createState() => _AppState();
+  State<App> createState() => AppState();
 }
 
-class _AppState extends State<App> with WidgetsBindingObserver {
+class AppState extends State<App> with WidgetsBindingObserver {
+  static final ValueNotifier<bool> darkNotifier =
+      ValueNotifier(Config.darkMode);
+
   @override
   void initState() {
     super.initState();
     Config.load();
     WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed) {
-      Config.save();
-    }
   }
 
   @override
@@ -46,22 +41,22 @@ class _AppState extends State<App> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-        valueListenable: App.darkNotifier,
-        builder: (BuildContext context, bool value, Widget? child) =>
-            ChangeNotifierProvider(
-              create: (context) => API(),
-              child: MaterialApp(
+    return ChangeNotifierProvider<API>(
+        create: (context) => TestAPI(),
+        child: ValueListenableBuilder(
+          valueListenable: darkNotifier,
+          builder: (BuildContext context, bool value, Widget? child) =>
+              MaterialApp(
                   title: 'Mister X',
                   theme: value ? ThemeData.dark() : ThemeData.light(),
                   initialRoute: Pages.Home,
                   routes: {
-                    Pages.Home: (context) => const HomePage(),
-                    Pages.Join: (context) => const JoinPage(),
-                    Pages.Lobby: (context) => const LobbyPage(),
-                    Pages.Game: (context) => const GamePage(),
-                    Pages.Settings: (context) => const SettingsPage(),
-                  }),
-            ));
+                Pages.Home: (context) => const HomePage(),
+                Pages.Join: (context) => const JoinPage(),
+                Pages.Lobby: (context) => const LobbyPage(),
+                Pages.Game: (context) => const GamePage(),
+                Pages.Settings: (context) => const SettingsPage(),
+              }),
+        ));
   }
 }

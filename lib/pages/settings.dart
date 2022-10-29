@@ -23,8 +23,8 @@ class _SettingsPageState extends State<SettingsPage> {
         SwitchListTile(
           title: const Text("Dark Mode"),
           value: Config.darkMode,
-          onChanged: (value) =>
-              setState(() => Config.darkMode = App.darkNotifier.value = value),
+          onChanged: (value) => setState(
+              () => Config.darkMode = AppState.darkNotifier.value = value),
         ),
         _title("Positions Updates"),
         ListTile(

@@ -2,21 +2,13 @@ import 'dart:developer';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// example
-/// ```
-/// final ConfigValue _p = ConfigValue("player", "a");
-/// String get p => _p.value;
-/// set p(String s) => _p.set(s);
-/// ```
 class ConfigValue<T> {
   String key;
   T value;
   String Function(T)? encoder;
   T Function(String)? decoder;
 
-  ConfigValue(this.key, this.value, [this.encoder, this.decoder]) {
-    load();
-  }
+  ConfigValue(this.key, this.value, [this.encoder, this.decoder]);
 
   void load() {
     // default value set by ctor
@@ -78,33 +70,39 @@ class ConfigValue<T> {
 
 class Config {
   static late final SharedPreferences _prefs;
-  static final Config i = Config();
-  final Map<Symbol, ConfigValue> _values = <Symbol, ConfigValue>{};
 
-  @override
-  noSuchMethod(Invocation invocation) {
-    var key = invocation.memberName;
-    if (invocation.isGetter) {
-      if (_values.containsKey(key)) {
-        return _values[key]?.value;
-      } else {
-        throw UnsupportedError("add property first");
-      }
-    }
-    if (invocation.isSetter) {
-      var value = invocation.positionalArguments.first;
-      if (!_values.containsKey(key)) {
-        _values[key] = ConfigValue(key.toString(), value);
-      }
-      _values[key]?.set(value);
-    }
+  static final ConfigValue<bool> _darkMode = register("darkMode", true);
+  static get darkMode => _darkMode.value;
+  static set darkMode(s) => _darkMode.set(s);
+
+  /// in seconds
+  static final ConfigValue<int> _playerGPSInterval =
+      register("playerGPSInterval", 30);
+  static get playerGPSInterval => _playerGPSInterval.value;
+  static set playerGPSInterval(s) => _playerGPSInterval.set(s);
+
+  /// time between position updates from mister x, in minutes
+  static final ConfigValue<int> _xGPSInterval = register("xGPSInterval", 1);
+  static get xGPSInterval => _xGPSInterval.value;
+  static set xGPSInterval(s) => _xGPSInterval.set(s);
+
+  static final ConfigValue<String> _playerName =
+      register("playerName", "Player");
+  static get playerName => _playerName.value;
+  static set playerName(s) => _playerName.set(s);
+
+  static final List<ConfigValue> _values = [];
+
+  static ConfigValue<T> register<T>(String key, T value) {
+    var cfg = ConfigValue(key, value);
+    _values.add(cfg);
+    return cfg;
   }
 
-  Future<void> load() async {
+  static Future<void> load() async {
     _prefs = await SharedPreferences.getInstance();
-    xGPSInterval = 1;
-    playerGPSInterval = 30;
-    darkMode = true;
-    playerName = "Player";
+    for (var value in _values) {
+      value.load();
+    }
   }
 }

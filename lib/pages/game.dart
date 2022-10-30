@@ -67,21 +67,21 @@ class _GamePageState extends State<GamePage> {
 
   @override
   Widget build(BuildContext context) {
-    var scaffold = GlobalKey<ScaffoldState>();
     return Consumer<API>(
       builder: (context, api, child) => Scaffold(
-        key: scaffold,
         appBar: AppBar(
             title: const Text('Find Mister X'),
             automaticallyImplyLeading: false,
             actions: [
-              IconButton(
-                onPressed: () {
-                  scaffold.currentState?.openDrawer();
-                },
-                icon: const Icon(Icons.people),
-                tooltip: "Find player",
-              ),
+              Builder(builder: (context) {
+                return IconButton(
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                  icon: const Icon(Icons.people),
+                  tooltip: "Find player",
+                );
+              }),
               IconButton(
                 onPressed: () {
                   api.finish();
@@ -98,9 +98,11 @@ class _GamePageState extends State<GamePage> {
             title: Text(api.player[index].name),
             subtitle: Utils.distanceText(api.localPlayer, api.player[index]),
             onTap: () {
-              scaffold.currentState?.closeDrawer();
-              _centerOnLocationUpdate = CenterOnLocationUpdate.never;
+              Scaffold.of(context).closeDrawer();
               map.move(api.player[index].pos, nearZoom);
+              setState(() {
+                _centerOnLocationUpdate = CenterOnLocationUpdate.never;
+              });
             },
           ),
         )),
@@ -159,9 +161,9 @@ class _GamePageState extends State<GamePage> {
                                 ),
                               ))),
                   CurrentLocationLayer(
-                    centerOnLocationUpdate: _centerOnLocationUpdate,
                     centerCurrentLocationStream:
                         _centerCurrentLocationStreamController.stream,
+                    centerOnLocationUpdate: _centerOnLocationUpdate,
                   ),
                 ],
                 nonRotatedChildren: [

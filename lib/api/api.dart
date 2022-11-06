@@ -21,6 +21,7 @@ class Player {
 }
 
 abstract class API extends ChangeNotifier {
+  bool authenticated = false;
   bool gameFinished = false;
   List<Player> player = [];
   Player get localPlayer;

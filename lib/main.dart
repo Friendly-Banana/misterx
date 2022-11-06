@@ -9,7 +9,7 @@ import 'package:misterx/utils.dart';
 import 'package:provider/provider.dart';
 
 import 'api/api.dart';
-import 'api/testapi.dart';
+import 'api/realapi.dart';
 
 void main() {
   runApp(const App());
@@ -42,7 +42,7 @@ class AppState extends State<App> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<API>(
-        create: (context) => TestAPI(),
+        create: (context) => RealAPI(),
         child: ValueListenableBuilder(
           valueListenable: darkNotifier,
           builder: (BuildContext context, bool value, Widget? child) =>

@@ -1,14 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
 
+import '../pages/config.dart';
 import 'api.dart';
 
 class RealAPI extends API {
   static const String serverUrl = "localhost:8080";
-  Map<String, String> headers = {};
+  Map<String, String> headers = {
+    HttpHeaders.contentTypeHeader: 'application/json',
+    HttpHeaders.acceptHeader: 'application/json'
+  };
   final Client _client = Client();
 
   late String lobbyCode;
@@ -16,25 +21,25 @@ class RealAPI extends API {
   @override
   get localPlayer => player.firstWhere((player) => player.id == localPlayerID);
 
-  void updateCookie(Response response) {
-    String? cookies = response.headers['set-cookie'];
-    if (cookies != null) {
-      headers['cookie'] = cookies;
-    }
+  Future<void> login() async {
+    var tokenResponse = await _post("login", {"name": Config.playerName});
+    headers[HttpHeaders.authorizationHeader] =
+        "token ${jsonDecode(tokenResponse)["access_token"]}";
+    authenticated = true;
   }
 
   Future<String> _request(String url, Future<Response> Function() call) async {
     Response response;
     try {
       response = await call();
-      updateCookie(response);
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return response.body;
       }
     } catch (e) {
       throw Exception('Unable to fetch $url from the REST API: $e');
     }
-    throw Exception('Bad API response: ${response.statusCode}');
+    throw Exception(
+        'Bad API response ${response.statusCode}: ${response.body}');
   }
 
   Future<String> _get(String url) async => _request(
@@ -60,6 +65,7 @@ class RealAPI extends API {
 
   @override
   Future<bool> createLobby() async {
+    if (!authenticated) await login();
     lobbyCode = await _get("create");
     localPlayerID = 0;
     return true;
@@ -67,7 +73,8 @@ class RealAPI extends API {
 
   @override
   Future<bool> joinLobby(String code) async {
-    await _post("join", {"code": code});
+    if (!authenticated) await login();
+    await _get("join/$code");
     lobbyCode = code;
     updatePlayers();
     return true;
@@ -88,7 +95,7 @@ class RealAPI extends API {
 
   @override
   Future<bool> kickPlayer(int id) async {
-    await _post("kick", {"id": id});
+    await _get("kick/$id");
     updatePlayers();
     return true;
   }

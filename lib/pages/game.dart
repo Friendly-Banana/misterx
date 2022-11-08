@@ -91,22 +91,25 @@ class _GamePageState extends State<GamePage> {
               )
             ]),
         drawer: Drawer(
-            child: ListView.builder(
-          itemCount: api.player.length,
-          itemBuilder: (context, index) => ListTile(
-            leading: Icon(api.player[index].mrX ? Icons.close : Icons.person),
-            title: Text(api.player[index].name),
-            subtitle: Utils.distanceText(api.localPlayer, api.player[index]),
-            onTap: () {
-              if (api.player[index].pos != null) {
-                Scaffold.of(context).closeDrawer();
-                map.move(api.player[index].pos!, nearZoom);
-                setState(() {
-                  _centerOnLocationUpdate = CenterOnLocationUpdate.never;
-                });
-              }
-            },
-          ),
+            child: ListView(
+          children: api.player
+              .map((player) => ListTile(
+                    leading: Icon(player.mrX ? Icons.close : Icons.person),
+                    title: Text(player.name),
+                    subtitle: Utils.distanceText(api.localPlayer, player),
+                    onTap: () {
+                      if (player.pos != null) {
+                        Scaffold.of(context).closeDrawer();
+                        map.move(player.pos!, nearZoom);
+                        setState(() {
+                          _centerOnLocationUpdate =
+                              CenterOnLocationUpdate.never;
+                        });
+                      }
+                    },
+                  ))
+              .toList()
+            ..insert(0, const ListTile(title: Text("Player"))),
         )),
         body: FutureBuilder(
           future: loaded,
@@ -150,7 +153,10 @@ class _GamePageState extends State<GamePage> {
                             padding: EdgeInsets.all(50),
                             maxZoom: 15,
                           ),
-                          markers: api.player.map(createMarker).toList(),
+                          markers: api.player
+                              .takeWhile((player) => player.pos != null)
+                              .map(createMarker)
+                              .toList(),
                           builder: (context, markers) => Container(
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),

@@ -21,7 +21,7 @@ class Player {
 
   static Map<String, dynamic> coordsToJSON(Position pos) =>
       {"coordinates": "${pos.longitude} ${pos.latitude}"};
-  static LatLng? coordsFromJSON(Map<String, dynamic> data) {
+  static LatLng? coordsFromJSON(Map<String, dynamic> data) {print(data );
     return data['pos'] != null
         ? LatLng.fromJson(
             {'coordinates': data['pos'].split(" ").map(double.parse).toList()})

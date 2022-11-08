@@ -20,8 +20,8 @@ Chase your friends or run away from them.
 ✅ bessere Qualität, anpassbare Farben, mitdrehender Text</br>
 ❌ schlechtere Performance, APIs brauchen wahrscheinlich alle ein Bankkonto
 
-Anbieter|gratis|Kommentar
----|---|---
-[Mapbox](https://www.mapbox.com/pricing)|200.000 Tiles / month|
-[StadiaMaps](https://stadiamaps.com/pricing/)|2,500 map views / day </br> 2,500 API requests / day|We’re always excited to serve niche needs or meet stringent demands.
-[Google Maps](https://mapsplatform.google.com/pricing/)|28.000 / month|
+| Anbieter                                                | gratis                                               | Kommentar                                                            |
+|---------------------------------------------------------|------------------------------------------------------|----------------------------------------------------------------------|
+| [Mapbox](https://www.mapbox.com/pricing)                | 200.000 Tiles / month                                |                                                                      |
+| [StadiaMaps](https://stadiamaps.com/pricing/)           | 2,500 map views / day </br> 2,500 API requests / day | We’re always excited to serve niche needs or meet stringent demands. |
+| [Google Maps](https://mapsplatform.google.com/pricing/) | 28.000 / month                                       |                                                                      |

@@ -71,7 +71,7 @@ class _LobbyPageState extends State<LobbyPage> {
               children: [
                 ElevatedButton(
                   onPressed: () async {
-                    if (await api.leaveLobby() && context.mounted) {
+                    if (await api.leaveLobby()) {
                       Navigator.pop(context);
                     }
                   },
@@ -79,7 +79,7 @@ class _LobbyPageState extends State<LobbyPage> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    if (await api.startGame() && context.mounted) {
+                    if (await api.startGame()) {
                       Navigator.pushNamed(context, Pages.Game);
                     }
                   },

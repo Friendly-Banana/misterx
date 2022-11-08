@@ -47,7 +47,7 @@ class RealAPI extends API {
   Future<String> _post(String url, Map<String, dynamic> data) async => _request(
       url,
       () => _client.post(Uri.https(serverUrl, url),
-          body: data, headers: headers));
+          body:jsonEncode(data), headers: headers));
 
   @override
   void sendLocalPlayerPos(Position pos) {

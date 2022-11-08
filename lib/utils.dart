@@ -20,6 +20,8 @@ class Utils {
     ));
   }
 
-  static Text distanceText(Player a, Player b) =>
-      Text("${distance.as(LengthUnit.Kilometer, a.pos!, b.pos!)}km");
+  static Text? distanceText(Player a, Player b) {
+    if (a.pos == null || b.pos == null) return null;
+    return Text("${distance.as(LengthUnit.Kilometer, a.pos!, b.pos!)}km");
+  }
 }

@@ -9,10 +9,9 @@ import '../pages/config.dart';
 import 'api.dart';
 
 class RealAPI extends API {
-  static const String serverUrl = "localhost:8080";
+  static const String serverUrl = "misterx.deta.dev";
   Map<String, String> headers = {
     HttpHeaders.contentTypeHeader: 'application/json',
-    HttpHeaders.acceptHeader: 'application/json'
   };
   final Client _client = Client();
 
@@ -22,9 +21,9 @@ class RealAPI extends API {
   get localPlayer => player.firstWhere((player) => player.id == localPlayerID);
 
   Future<void> login() async {
-    var tokenResponse = await _post("login", {"name": Config.playerName});
+    var tokenResponse = await _get("login/${Config.playerName}");
     headers[HttpHeaders.authorizationHeader] =
-        "token ${jsonDecode(tokenResponse)["access_token"]}";
+        "bearer ${jsonDecode(tokenResponse)["access_token"]}";
     authenticated = true;
   }
 
@@ -52,7 +51,7 @@ class RealAPI extends API {
 
   @override
   void sendLocalPlayerPos(Position pos) {
-    _post("pos", pos.toJson());
+    _post("pos", Player.coordsToJSON(pos));
   }
 
   @override
@@ -66,16 +65,18 @@ class RealAPI extends API {
   @override
   Future<bool> createLobby() async {
     if (!authenticated) await login();
-    lobbyCode = await _get("create");
-    localPlayerID = 0;
+    var data = jsonDecode(await _get("create"));
+    lobbyCode = data["code"];
+    localPlayerID = data["id"];
     return true;
   }
 
   @override
   Future<bool> joinLobby(String code) async {
     if (!authenticated) await login();
-    await _get("join/$code");
-    lobbyCode = code;
+    var data = jsonDecode(await _get("join/$code"));
+    lobbyCode = data["code"];
+    localPlayerID = data["id"];
     updatePlayers();
     return true;
   }

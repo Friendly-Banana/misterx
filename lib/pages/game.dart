@@ -55,7 +55,7 @@ class _GamePageState extends State<GamePage> {
   }
 
   Marker createMarker(Player player) => Marker(
-        point: player.pos,
+        point: player.pos!,
         width: 40,
         height: 40,
         builder: (_) => IconButton(
@@ -98,11 +98,13 @@ class _GamePageState extends State<GamePage> {
             title: Text(api.player[index].name),
             subtitle: Utils.distanceText(api.localPlayer, api.player[index]),
             onTap: () {
-              Scaffold.of(context).closeDrawer();
-              map.move(api.player[index].pos, nearZoom);
-              setState(() {
-                _centerOnLocationUpdate = CenterOnLocationUpdate.never;
-              });
+              if (api.player[index].pos != null) {
+                Scaffold.of(context).closeDrawer();
+                map.move(api.player[index].pos!, nearZoom);
+                setState(() {
+                  _centerOnLocationUpdate = CenterOnLocationUpdate.never;
+                });
+              }
             },
           ),
         )),

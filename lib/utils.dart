@@ -21,5 +21,5 @@ class Utils {
   }
 
   static Text distanceText(Player a, Player b) =>
-      Text("${distance.as(LengthUnit.Kilometer, a.pos, b.pos)}km");
+      Text("${distance.as(LengthUnit.Kilometer, a.pos!, b.pos!)}km");
 }

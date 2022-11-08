@@ -6,7 +6,7 @@ class Player {
   int id;
   String name;
   bool mrX;
-  LatLng pos;
+  LatLng? pos;
 
   Player(this.id, this.name, this.mrX, this.pos);
 
@@ -14,9 +14,18 @@ class Player {
     return Player(
       data['id'],
       data['name'],
-      data['mrX'],
-      LatLng.fromJson(data['pos']),
+      data['mister_x'],
+      coordsFromJSON(data),
     );
+  }
+
+  static Map<String, dynamic> coordsToJSON(Position pos) =>
+      {"coordinates": "${pos.longitude} ${pos.latitude}"};
+  static LatLng? coordsFromJSON(Map<String, dynamic> data) {
+    return data['pos'] != null
+        ? LatLng.fromJson(
+            {'coordinates': data['pos'].split(" ").map(double.parse).toList()})
+        : null;
   }
 }
 

@@ -9,6 +9,8 @@ class TestAPI extends API {
 
   @override
   Future<bool> createLobby() async {
+    lobbyCode = "Code";
+    notifyListeners();
     return true;
   }
 
@@ -21,6 +23,7 @@ class TestAPI extends API {
 
   @override
   Future<bool> joinLobby(String code) async {
+    lobbyCode = "Code";
     updatePlayers();
     return true;
   }

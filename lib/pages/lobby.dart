@@ -61,6 +61,8 @@ class _LobbyPageState extends State<LobbyPage> {
         ),
         body: Column(
           children: [
+            Text("Lobby Code: ${api.lobbyCode}",
+                style: Theme.of(context).textTheme.titleLarge),
             ListView.builder(
               shrinkWrap: true,
               itemBuilder: (context, index) => playerItem(context, index, api),

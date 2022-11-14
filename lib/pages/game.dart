@@ -90,27 +90,28 @@ class _GamePageState extends State<GamePage> {
                 tooltip: "End the game",
               )
             ]),
-        drawer: Drawer(
-            child: ListView(
-          children: api.player
-              .map((player) => ListTile(
-                    leading: Icon(player.mrX ? Icons.close : Icons.person),
-                    title: Text(player.name),
-                    subtitle: Utils.distanceText(api.localPlayer, player),
-                    onTap: () {
-                      if (player.pos != null) {
-                        Scaffold.of(context).closeDrawer();
-                        map.move(player.pos!, nearZoom);
-                        setState(() {
-                          _centerOnLocationUpdate =
-                              CenterOnLocationUpdate.never;
-                        });
-                      }
-                    },
-                  ))
-              .toList()
-            ..insert(0, const ListTile(title: Text("Player"))),
-        )),
+        drawer: Drawer(child: Builder(builder: (context) {
+          return ListView(
+            children: api.player
+                .map((player) => ListTile(
+                      leading: Icon(player.mrX ? Icons.close : Icons.person),
+                      title: Text(player.name),
+                      subtitle: Utils.distanceText(api.localPlayer, player),
+                      onTap: () {
+                        if (player.pos != null) {
+                          Scaffold.of(context).closeDrawer();
+                          map.move(player.pos!, nearZoom);
+                          setState(() {
+                            _centerOnLocationUpdate =
+                                CenterOnLocationUpdate.never;
+                          });
+                        }
+                      },
+                    ))
+                .toList()
+              ..insert(0, const ListTile(title: Text("Player"))),
+          );
+        })),
         body: FutureBuilder(
           future: loaded,
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -154,7 +155,9 @@ class _GamePageState extends State<GamePage> {
                             maxZoom: 15,
                           ),
                           markers: api.player
-                              .takeWhile((player) => player.pos != null)
+                              .where((player) =>
+                                  player.id != api.localPlayerID &&
+                                  player.pos != null)
                               .map(createMarker)
                               .toList(),
                           builder: (context, markers) => Container(

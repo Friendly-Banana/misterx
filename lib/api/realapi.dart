@@ -15,11 +15,6 @@ class RealAPI extends API {
   };
   final Client _client = Client();
 
-  late String lobbyCode;
-  late int localPlayerID;
-  @override
-  get localPlayer => player.firstWhere((player) => player.id == localPlayerID);
-
   Future<void> login() async {
     var tokenResponse = await _get("login/${Config.playerName}");
     headers[HttpHeaders.authorizationHeader] =

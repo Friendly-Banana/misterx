@@ -14,7 +14,6 @@
 auth/session cookies?
 player name + lobby code
 
-
 **type player**
 int id
 String name

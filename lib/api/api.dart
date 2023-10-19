@@ -21,7 +21,9 @@ class Player {
 
   static Map<String, dynamic> coordsToJSON(Position pos) =>
       {"coordinates": "${pos.longitude} ${pos.latitude}"};
-  static LatLng? coordsFromJSON(Map<String, dynamic> data) {print(data );
+
+  static LatLng? coordsFromJSON(Map<String, dynamic> data) {
+    print(data);
     return data['pos'] != null
         ? LatLng.fromJson(
             {'coordinates': data['pos'].split(" ").map(double.parse).toList()})
@@ -35,7 +37,9 @@ abstract class API extends ChangeNotifier {
   List<Player> player = [];
   late String lobbyCode;
   late int localPlayerID;
-  Player get localPlayer => player.firstWhere((player) => player.id == localPlayerID);
+
+  Player get localPlayer =>
+      player.firstWhere((player) => player.id == localPlayerID);
 
   void sendLocalPlayerPos(Position pos);
 

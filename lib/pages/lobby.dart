@@ -15,6 +15,7 @@ class LobbyPage extends StatefulWidget {
 
 class _LobbyPageState extends State<LobbyPage> {
   late final Timer refresh;
+
   @override
   void initState() {
     super.initState();

@@ -20,8 +20,10 @@ class Utils {
     ));
   }
 
-  static Text? distanceText(Player a, Player b) {
-    if (a.pos == null || b.pos == null) return null;
-    return Text("${distance.as(LengthUnit.Kilometer, a.pos!, b.pos!)}km");
+  static Text? distanceText(Player one, Player two) {
+    LatLng a = one.pos!, b = two.pos!;
+    //if (one.pos == null || two.pos == null) return null;
+    var km = distance.as(LengthUnit.Kilometer, a, b);
+    return Text(km > 1 ? "${km}km" : "${distance.as(LengthUnit.Meter, a, b)}m");
   }
 }
